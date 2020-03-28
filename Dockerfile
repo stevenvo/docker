@@ -44,16 +44,17 @@ FROM python:${PYTHON_IMAGE_TAG} AS build
 LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
-
-
 # Install sudo, setup permission
 RUN groupadd --gid 1000 octoprint 
 RUN useradd --uid 1000 --gid octoprint -G dialout,sudo --shell /bin/bash --create-home octoprint
 RUN apt-get update
 RUN apt-get -y install sudo procps
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-# RUN cat /etc/sudoers
-
+# Install Klipper
+WORKDIR /opt
+RUN git clone https://github.com/KevinOConnor/klipper
+# RUN chown -R octoprint:octoprint /opt/klipper
+RUN su - octoprint -c /opt/klipper/scripts/install-octopi.sh
 
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
