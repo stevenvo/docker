@@ -21,17 +21,13 @@ RUN make
 
 # build ocotprint
 FROM python:${PYTHON_IMAGE_TAG} AS compiler
-
 ARG tag
 ENV tag ${tag:-master}
-
 RUN apt-get update && apt-get install -y make g++ curl
-
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
 	&& mkdir -p /opt/venv \
   && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
-
 #install venv            
 RUN pip install virtualenv
 RUN python -m virtualenv /opt/venv
@@ -40,19 +36,21 @@ WORKDIR /opt/venv
 RUN python setup.py install
 
 
+# Install sudo, setup permission
 FROM python:${PYTHON_IMAGE_TAG} AS build
 LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
-
-
-# Install sudo, setup permission
 RUN groupadd --gid 1000 octoprint 
 RUN useradd --uid 1000 --gid octoprint -G dialout,sudo --shell /bin/bash --create-home octoprint
 RUN apt-get update
 RUN apt-get -y install sudo procps
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-# RUN cat /etc/sudoers
+# Install Klipper
+WORKDIR /opt
+RUN git clone https://github.com/KevinOConnor/klipper
+# RUN chown -R octoprint:octoprint /opt/klipper
+RUN su - octoprint -c /opt/klipper/scripts/install-octopi.sh
 
 
 #Install Octoprint, ffmpeg, and cura engine
@@ -70,4 +68,9 @@ USER octoprint
 VOLUME /home/octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
+
+
+
+
+
 
