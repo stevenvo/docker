@@ -1,4 +1,4 @@
-ARG PYTHON_IMAGE_TAG=3.8.2-buster
+ARG PYTHON_IMAGE_TAG=2.7-slim-buster
 
 FROM buildpack-deps:curl AS ffmpeg
 RUN apt-get update && apt-get install -y xz-utils
