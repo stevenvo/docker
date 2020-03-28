@@ -1,4 +1,4 @@
-ARG PYTHON_IMAGE_TAG=2.7-slim-buster
+ARG PYTHON_IMAGE_TAG=3.8.2-buster
 
 FROM buildpack-deps:curl AS ffmpeg
 RUN apt-get update && apt-get install -y xz-utils
@@ -45,14 +45,22 @@ LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
 
-RUN groupadd --gid 1000 octoprint \
-  && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
+
+# Install sudo, setup permission
+RUN groupadd --gid 1000 octoprint 
+RUN useradd --uid 1000 --gid octoprint -G dialout,sudo --shell /bin/bash --create-home octoprint
+RUN apt-get update
+RUN apt-get -y install sudo procps
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# RUN cat /etc/sudoers
+
 
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
 COPY --from=ffmpeg /opt /opt/ffmpeg
 COPY --from=cura-compiler /opt /opt/cura
 
+# setup path
 RUN chown -R octoprint:octoprint /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -62,3 +70,4 @@ USER octoprint
 VOLUME /home/octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
+
