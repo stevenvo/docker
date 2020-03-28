@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   octoprint:
-    image: octoprint:base_py3
+    image: octoprint_py3:klipper
     ports:
       - 5000:5000
     devices:
