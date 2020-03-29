@@ -1,4 +1,5 @@
-ARG PYTHON_IMAGE_TAG=3.8.2-buster
+# ARG PYTHON_IMAGE_TAG=3.8.2-buster
+ARG PYTHON_IMAGE_TAG=2.7-slim-buster
 
 FROM buildpack-deps:curl AS ffmpeg
 RUN apt-get update && apt-get install -y xz-utils
@@ -44,17 +45,31 @@ FROM python:${PYTHON_IMAGE_TAG} AS build
 LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
-
-
 # Install sudo, setup permission
 RUN groupadd --gid 1000 octoprint 
 RUN useradd --uid 1000 --gid octoprint -G dialout,sudo --shell /bin/bash --create-home octoprint
 RUN apt-get update
-RUN apt-get -y install sudo procps
+RUN apt-get -y install sudo procps net-tools nano git wget
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-# RUN cat /etc/sudoers
 
 
+# Create user
+# RUN useradd -G dialout,sudo --shell /bin/bash --create-home klippy
+USER octoprint
+#This fixes issues with the volume command setting wrong permissions
+RUN mkdir /home/octoprint/.config
+VOLUME /home/octoprint/.config
+
+### Klipper setup ###
+WORKDIR /home/octoprint
+RUN git clone https://github.com/KevinOConnor/klipper
+COPY . klipper/
+USER root
+RUN chown octoprint:octoprint -R klipper
+RUN su - octoprint -c ./klipper/scripts/install-octopi.sh
+USER octoprint
+
+USER root
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
 COPY --from=ffmpeg /opt /opt/ffmpeg
@@ -71,3 +86,6 @@ VOLUME /home/octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
 
+WORKDIR /home/octoprint
+RUN git clone https://github.com/stevenvo/klipper-printer-cfg-files
+VOLUME /home/octoprint/klipper-printer-cfg-files
