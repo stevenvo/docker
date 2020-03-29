@@ -1,16 +1,34 @@
 version: '3.7'
 
 services:
-  octoprint:
+  octoprint_cr10s:
     image: octoprint:py2.7
+    container_name: cr10s
+    privileged: true
     ports:
       - 5000:5000
-      - 52697:52698
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
-     - /dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00
+    #  - /dev/ttyACM1:/dev/ttyACM1
+     # - /dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00
     volumes:
-     - octoprint:/home/octoprint
+     - octoprint_cr10s:/home/octoprint
+     - /dev:/dev
+     
+  octoprint_ender3:
+    image: octoprint:py2.7
+    container_name: ender3
+    privileged: true
+    ports:
+      - 5001:5000
+    devices:
+     - /dev/ttyACM0:/dev/ttyACM0
+    #  - /dev/ttyACM1:/dev/ttyACM1
+     # - /dev/serial/by-id/usb-Klipper_stm32f103xe_33FFD5055246333020760943-if00:/dev/serial/by-id/usb-Klipper_stm32f103xe_33FFD5055246333020760943-if00
+    volumes:
+     - octoprint_ender3:/home/octoprint
+     - /dev:/dev
 
 volumes:
-  octoprint:
+  octoprint_cr10s:
+  octoprint_ender3:
