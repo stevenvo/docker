@@ -2,11 +2,13 @@ version: '3.7'
 
 services:
   octoprint:
-    image: octoprint_py3:klipper
+    image: octoprint:py2.7
     ports:
       - 5000:5000
+      - 52697:52698
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
+     - /dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00
     volumes:
      - octoprint:/home/octoprint
 
