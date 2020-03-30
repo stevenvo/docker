@@ -9,8 +9,6 @@ services:
       - 5000:5000
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
-    #  - /dev/ttyACM1:/dev/ttyACM1
-     # - /dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00:/dev/serial/by-id/usb-Klipper_lpc1768_1520011289083DAF6FA26F5CC52000F5-if00
     volumes:
      - octoprint_cr10s:/home/octoprint
      - /dev:/dev
@@ -23,8 +21,6 @@ services:
       - 5001:5000
     devices:
      - /dev/ttyACM0:/dev/ttyACM0
-    #  - /dev/ttyACM1:/dev/ttyACM1
-     # - /dev/serial/by-id/usb-Klipper_stm32f103xe_33FFD5055246333020760943-if00:/dev/serial/by-id/usb-Klipper_stm32f103xe_33FFD5055246333020760943-if00
     volumes:
      - octoprint_ender3:/home/octoprint
      - /dev:/dev
