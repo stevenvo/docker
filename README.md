@@ -13,7 +13,8 @@ Since [Klipper](https://www.klipper3d.org/) only supports Py2, the Octoprint is 
 Ensure docker and docker-compose are installed on your host. Some references:
 
 * [How to install Docker on Raspberry Pi](https://phoenixnap.com/kb/docker-on-raspberry-pi)
-* [How to install Docker Compose on Ubuntu](https://phoenixnap.com/kb/install-docker-compose-ubuntu)
+* [How to install Docker Compose on Ubuntu](https://phoenixnap.com/kb/install-docker-compose-ubuntu), best bet for Rpi: `sudo apt-get install docker-compose`
+
 
 # Getting started
 
