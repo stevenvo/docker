@@ -1,37 +1,69 @@
-# OctoPrint-docker [![Build Status](https://travis-ci.org/OctoPrint/docker.svg?branch=master)](https://travis-ci.org/OctoPrint/docker)
+# OctoPrint-docker 
 
-This repository contains everything you need to run [Octoprint](https://github.com/foosel/OctoPrint) in a docker environment.
+This is a remix from the original repo of [OctoPrint/docker](https://github.com/OctoPrint/docker) with extras:
 
-I have also built a python2 version, because not all plugins have been ported to python3 yet. So far there is no reason why not, I would still prefer python3.
+* support 2 or more running containers (each associated with one printer via 1 USB connection): verified working on both my Ender3 and CR10s
+* privleged mode to support accessing USB/Serial ports from each container
+* support [klipper](https://www.klipper3d.org/) working isolated on each container
 
-I noticed that I forgot one "dot" in the tags, it will be fixed next week.
+Since [Klipper](https://www.klipper3d.org/) only supports Py2, the Octoprint is also kept at Py2.7 (feel free to explore and post a pull request).
 
-the python3 version is available for all three major architectures (amd64, arm64, arm)
-the python2 will follow soon
+
+# Pre-requisites
+Ensure docker and docker-compose are installed on your host. Some references:
+
+* [How to install Docker on Raspberry Pi](https://phoenixnap.com/kb/docker-on-raspberry-pi)
+* [How to install Docker Compose on Ubuntu](https://phoenixnap.com/kb/install-docker-compose-ubuntu)
 
 # Getting started
 
+**Create images**
+
 ```
-git clone https://github.com/OctoPrint/docker.git octoprint-docker && cd octoprint-docker
+git clone https://github.com/stevenvo/octoprint-docker && cd octoprint-docker
 
-# search for you 3D printer serial port (usually it's /dev/ttyUSB0 or /dev/ttyACM0)
-ls /dev | grep tty
+docker build -t octoprint:py2.7 .
 
-// edit the docker-compose file to set your 3D printer serial port
-vi docker-compose.yml
+# the above will take a while to complete building
+```
 
+**Spin up containers using the created image `octoprint:py2.7`**
+
+```
 docker-compose up -d
-```
 
-You can then go to http://localhost:5000
-
-You can display the log using `docker-compose logs -f`
-
-## Without docker-compose
-```
-docker run -d -v ./config:/home/octoprint/.octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint badsmoke/octoprint
+# you should see something like this:
+# Creating network "octoprint-docker_default" with the default driver
+# Creating cr10s  ... done
+# Creating ender3 ... done
 
 ```
+Verify Octoprint has been up and running for 2 printers by going to:
+
+* http://yourHostOrIp:5000 
+* http://yourHostOrIp:5001 
+
+Proceed if you want to use Klipper, otherwise this is completed.
+
+# For Klipper user
+
+```
+# Login to each container - note: `cr10s` is the container name
+docker exec -it cr10s /bin/bash
+
+nano printer.cfg
+# and add your klipper config as usual
+# make sure you update the serial port to the corresponding printer
+# to search for serial port:
+# ls /dev/serial/by-id
+
+# once done, restart klipper service
+sudo service klipper restart
+
+# tail log to see if klipper service working
+tail -f /tmp/klippy.log
+```
+
 
 # Additional tools
 
