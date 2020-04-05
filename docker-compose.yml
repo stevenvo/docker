@@ -12,7 +12,7 @@ services:
     volumes:
      - octoprint_cr10s:/home/octoprint
      - /dev:/dev
-     
+
   octoprint_ender3:
     image: octoprint:py2.7
     container_name: ender3
@@ -25,6 +25,19 @@ services:
      - octoprint_ender3:/home/octoprint
      - /dev:/dev
 
+  octoprint_kossel:
+    image: octoprint:py2.7
+    container_name: kossel
+    privileged: true
+    ports:
+      - 5002:5000
+    devices:
+     - /dev/ttyACM0:/dev/ttyACM0
+    volumes:
+     - octoprint_kossel:/home/octoprint
+     - /dev:/dev
+
 volumes:
   octoprint_cr10s:
   octoprint_ender3:
+  octoprint_kossel:
