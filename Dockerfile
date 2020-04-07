@@ -49,7 +49,7 @@ LABEL issues="github.com/OcotPrint/docker/issues"
 RUN groupadd --gid 1000 octoprint 
 RUN useradd --uid 1000 --gid octoprint -G dialout,sudo --shell /bin/bash --create-home octoprint
 RUN apt-get update
-RUN apt-get -y install sudo procps net-tools nano git wget
+RUN apt-get -y install sudo procps net-tools nano git wget pastebinit
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 
